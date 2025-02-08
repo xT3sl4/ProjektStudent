@@ -1,3 +1,4 @@
+import app
 from selenium.webdriver.common.by import By
 import time
 import keyboard
@@ -54,3 +55,5 @@ def track_product_media(product_name, userId):
         time.sleep(0.2)
 
     driver.quit()
+
+
