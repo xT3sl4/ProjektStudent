@@ -27,5 +27,11 @@ def save_price_to_db(product_name, price, source, userId):
     productsPrices.insert_one(data)
     print(f"✅ Zapisano cenę do MongoDB: {data}")
 
-def get_tracked_products(userId):
-    return productsTracked.find({"userId": userId})
+
+def get_tracked_products(userId=None):
+    if userId:
+        return productsTracked.find({"userId": userId})
+    else:
+        return productsTracked.find({})
+
+
