@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,6 @@ from scrapper.scraper import get_xkom_price, get_morele_price, get_media_price
 
 
 def get_price_history(request, product_name):
-
     price_data = productsPrices.find({"product_name": product_name})
 
     result = [
@@ -91,13 +91,22 @@ def save_tracked_product(request):
 def get_prices(request):
     if request.method == "POST":
         tracked_products = get_tracked_products()
-        for product in tracked_products:
+
+        def update_price(product):
             if "xkom" in product["source"]:
                 get_xkom_price(product["link"], product["product_name"], product["userId"])
             elif "morele" in product["source"]:
                 get_morele_price(product["link"], product["product_name"], product["userId"])
             elif "mediaexpert" in product["source"]:
                 get_media_price(product["link"], product["product_name"], product["userId"])
+
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(update_price, product) for product in tracked_products]
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    logger.error(f"Error updating price: {e}")
 
         return JsonResponse({"message": "Prices have been updated."}, status=200)
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const ProductTrackerForm = () => {
     const [productName, setProductName] = useState("");
-    const [source, setSource] = useState("X-Kom");
+    const [source, setSource] = useState("xkom");
     const [message, setMessage] = useState("");
 
     const handleSubmit = async (e) => {
@@ -59,7 +59,7 @@ const ProductTrackerForm = () => {
                         value={source}
                         onChange={(e) => setSource(e.target.value)}
                     >
-                        <option value="X-Kom">X-Kom</option>
+                        <option value="xkom">X-Kom</option>
                         <option value="Morele">Morele</option>
                         <option value="MediaExpert">MediaExpert</option>
                     </select>
