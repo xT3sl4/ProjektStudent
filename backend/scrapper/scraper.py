@@ -24,13 +24,8 @@ def get_xkom_price(link, product_name, userId):
     driver = get_driver()
     try:
         driver.get(link)
-
-
         price_span = driver.find_element(By.CSS_SELECTOR, "span.sc-gWHAAX")
-
-
         price_element = price_span.find_element(By.XPATH, "..")
-
         price_text = price_element.text
         price = int(re.sub(r'\D', '', price_text)) // 100
 
