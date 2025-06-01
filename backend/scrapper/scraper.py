@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from scrapper.database import save_price_to_db
 
+
 def get_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
@@ -18,16 +19,27 @@ def get_driver():
     service = Service()
     return webdriver.Chrome(service=service, options=chrome_options)
 
+
 def get_xkom_price(link, product_name, userId):
     driver = get_driver()
-    driver.get(link)
     try:
-        price_text = driver.find_element(By.CSS_SELECTOR, "span.hbVORa").text
+        driver.get(link)
+
+
+        price_span = driver.find_element(By.CSS_SELECTOR, "span.sc-gWHAAX")
+
+
+        price_element = price_span.find_element(By.XPATH, "..")
+
+        price_text = price_element.text
         price = int(re.sub(r'\D', '', price_text)) // 100
+
         save_price_to_db(product_name, price, "X-Kom", userId)
     except Exception as e:
         print(f"❌ Błąd pobierania ceny X-Kom: {e}")
-    driver.quit()
+    finally:
+        driver.quit()
+
 
 def get_morele_price(link, product_name, userId):
     driver = get_driver()
@@ -39,16 +51,19 @@ def get_morele_price(link, product_name, userId):
         save_price_to_db(product_name, price, "Morele", userId)
     except Exception as e:
         print(f"❌ Błąd pobierania ceny Morele: {e}")
-    driver.quit()
+    finally:
+        driver.quit()
+
 
 def get_media_price(link, product_name, userId):
     driver = get_driver()
     driver.get(link)
     try:
-        box = driver.find_element(By.CSS_SELECTOR, "div#section_page-summary-box")
+        box = driver.find_element(By.CSS_SELECTOR, "div.prices")
         price_text = box.find_element(By.CSS_SELECTOR, "span.whole").text
-        price = int(re.sub(r'\D', '', price_text))
+        price = re.sub(r'\D', '', price_text)
         save_price_to_db(product_name, price, "MediaExpert", userId)
     except Exception as e:
         print(f"❌ Błąd pobierania ceny MediaExpert: {e}")
-    driver.quit()
+    finally:
+        driver.quit()
